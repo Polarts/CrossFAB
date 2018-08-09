@@ -85,7 +85,7 @@ namespace CrossFAB.Controls
         public FloatingMenu()
         {
             InitializeComponent();
-
+            
             ChildAdded += ArrangeChildren;
 
             MainButton.OnClickCommand = new Command(() =>
@@ -112,28 +112,31 @@ namespace CrossFAB.Controls
 
         void ArrangeChildren(object sender, EventArgs evt)
         {
-            System.Diagnostics.Debug.WriteLine("Arranging " + Children.Count);
+            System.Diagnostics.Debug.WriteLine("Arranging " +Children.Count);
 
             for (int i = 1; i < Children.Count; i++)
             {
                 Children[i].Scale = 0.7;
-                SetLayoutBounds(Children[i], new Rectangle(0, -60 * i, 60, 60));
+                AbsoluteLayout.SetLayoutBounds(Children[i], new Rectangle(0, (60*i), 60, 60));
+                Children[i].Rotation = 180;
             }
 
             Collapse(1);
         }
 
+
         public async void Collapse(int time)
         {
             int raisInd = raised ? 1 : 0;
-            for (int i = 1 - raisInd; i < Children.Count - raisInd; i++)
+            for (int i = 1-raisInd; i < Children.Count - raisInd; i++)
             {
-                Children[i].TranslateTo(0, 60 * (i + raisInd), (uint)time);
+                Children[i].TranslateTo(0, -60 * (i + raisInd), (uint)time);
             }
             await Task.Delay(time);
             for (int i = 1 - raisInd; i < Children.Count - raisInd; i++)
             {
                 Children[i].IsVisible = false;
+                Children[i].InputTransparent = true;
             }
         }
 
@@ -141,11 +144,13 @@ namespace CrossFAB.Controls
         {
             RaiseChild(MainButton);
             raised = true;
-            for (int i = 0; i < Children.Count - 1; i++)
+            for (int i = 0; i < Children.Count-1; i++)
             {
                 Children[i].IsVisible = true;
                 Children[i].TranslateTo(0, 0, (uint)time);
+                Children[i].InputTransparent = false;
             }
+
         }
 
         protected override void OnPropertyChanged(string propertyName = null)
@@ -168,8 +173,6 @@ namespace CrossFAB.Controls
                 if (isRevealed)
                     MainButton.IconSrc = CloseIcon;
             }
-
-
 
         }
     }
