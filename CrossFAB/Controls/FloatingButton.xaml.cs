@@ -48,6 +48,19 @@ namespace CrossFAB.Controls
                 SetValue(OnClickCommandProperty, value);
             }
         }
+        public static readonly BindableProperty ExtraCommandProperty = BindableProperty.Create(nameof(ExtraCommand), typeof(ICommand), typeof(FloatingButton), null, Xamarin.Forms.BindingMode.OneWay);
+        public ICommand ExtraCommand
+        {
+            get
+            {
+                return (ICommand)GetValue(ExtraCommandProperty);
+            }
+
+            set
+            {
+                SetValue(ExtraCommandProperty, value);
+            }
+        }
 
         TapGestureRecognizer onTap = new TapGestureRecognizer();
 
@@ -68,9 +81,15 @@ namespace CrossFAB.Controls
             {
                 Icon.Source = IconSrc;
             }
-            else if (propertyName == OnClickCommandProperty.PropertyName)
+            else if (propertyName == OnClickCommandProperty.PropertyName
+                     || propertyName == ExtraCommandProperty.PropertyName)
             {
-                onTap.Command = OnClickCommand;
+                onTap.Command = new Command(() =>
+                {
+                    OnClickCommand.Execute(null);
+                    if (ExtraCommand != null)
+                        ExtraCommand.Execute(null);
+                });
                 if (!GestureRecognizers.Contains(onTap))
                 {
                     GestureRecognizers.Add(onTap);
